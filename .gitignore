@@ -1,0 +1,46 @@
+# --- Dépendances et builds ---
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+*.tsbuildinfo
+.eslintcache
+
+# --- Secrets et configuration locale (ne jamais publier) ---
+.env
+.env.*
+!.env.example
+
+# --- Journaux ---
+logs/
+*.log
+npm-debug.log*
+
+# --- Fichiers téléversés et données de production ---
+storage/
+uploads/
+backups/
+*.dump
+*.sql.gz
+*.bak
+
+# --- Clés et certificats privés ---
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# --- Éditeur ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# --- Windows / macOS ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
