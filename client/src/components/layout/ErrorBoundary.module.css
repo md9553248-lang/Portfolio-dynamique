@@ -1,0 +1,6 @@
+.box {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+  padding-block: clamp(3rem, 10vw, 7rem);
+}

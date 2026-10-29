@@ -1,0 +1,12 @@
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: none;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warning-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}

@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { cx } from '../../lib/cx';
 import styles from './Button.module.css';
 import { Spinner } from './Spinner';
@@ -25,16 +26,29 @@ type ButtonAsLink = CommonProps & {
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-/** Bouton, ou lien d'apparence bouton lorsque `href` est fourni. */
+/** Un chemin interne au site commence par « / » (et pas « // »). */
+function isInternalPath(href: string): boolean {
+  return href.startsWith('/') && !href.startsWith('//');
+}
+
+/**
+ * Bouton, ou lien d'apparence bouton lorsque `href` est fourni.
+ * Les chemins internes (« /projets ») utilisent le routeur, sans rechargement de la page.
+ */
 export function Button(props: ButtonProps) {
   if (props.href !== undefined) {
     const { variant = 'primary', size = 'md', className, children, href, ...rest } = props;
+    const classes = cx(styles.button, styles[variant], styles[size], className);
+
+    if (isInternalPath(href)) {
+      return (
+        <Link to={href} className={classes} {...rest}>
+          {children}
+        </Link>
+      );
+    }
     return (
-      <a
-        href={href}
-        className={cx(styles.button, styles[variant], styles[size], className)}
-        {...rest}
-      >
+      <a href={href} className={classes} {...rest}>
         {children}
       </a>
     );
@@ -54,13 +68,7 @@ export function Button(props: ButtonProps) {
   return (
     <button
       type={type}
-      className={cx(
-        styles.button,
-        styles[variant],
-        styles[size],
-        loading && styles.loading,
-        className,
-      )}
+      className={cx(styles.button, styles[variant], styles[size], loading && styles.loading, className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...rest}

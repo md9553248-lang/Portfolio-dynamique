@@ -1,0 +1,8 @@
+.main {
+  min-height: 60vh;
+}
+
+/* Le conteneur principal reçoit le focus après un changement de page (lecteurs d'écran), sans cadre visible. */
+.main:focus {
+  outline: none;
+}

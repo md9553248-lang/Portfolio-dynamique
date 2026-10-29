@@ -3,9 +3,9 @@
 Portfolio professionnel administrable et sécurisé : React + TypeScript (frontend), Node.js + Express +
 TypeScript (backend), MySQL.
 
-> **État du projet : Phase 02 (design system).** Le projet comprend un socle technique et un design
-> system. Le site public, la base de données, l'authentification et l'administration **ne sont pas
-> encore implémentés**.
+> **État du projet : Phase 03 (site public).** Le projet comprend un socle technique, un design
+> system et les pages publiques avec des **contenus de démonstration**. La base de données,
+> l'authentification, l'administration et l'envoi de messages **ne sont pas encore implémentés**.
 
 ## Ce qui existe réellement aujourd'hui
 
@@ -19,14 +19,18 @@ TypeScript (backend), MySQL.
 - Design system (frontend) : variables de design (tokens), thèmes sombre et clair, polices
   auto-hébergées, composants communs (bouton, carte, badge, champs de formulaire, navigation
   responsive, pied de page, indicateur de chargement, cadre cinéma, trait de lumière).
-- Page **Guide de style** : catalogue visuel des composants (page technique provisoire).
+- Page **Guide de style** (`/guide-de-style`) : catalogue visuel des composants (page technique).
+- Site public : accueil, à propos, projets (avec filtre et détail), compétences, expériences,
+  formations, certifications, actualités, contact, confidentialité, mentions légales, page 404 et
+  page d'erreur. Contenus statiques : voir `docs/public-site.md`.
 - ESLint, Prettier, TypeScript strict, Vitest, Supertest, Testing Library.
 
 ## Ce qui n'existe pas encore
 
-Pages publiques (accueil, projets, contact...), routage, schéma MySQL et migrations, API métier,
+Contenus dynamiques (tout vient de fichiers du dépôt), schéma MySQL et migrations, API métier,
 authentification, création du premier administrateur, administration, gestion du CV et des médias,
-messagerie, animations, déploiement. Ces éléments arrivent dans les phases 03 à 11.
+envoi des messages du formulaire de contact, messagerie, animations, anglais, déploiement. Ces
+éléments arrivent dans les phases 04 à 11.
 
 ## Prérequis (Windows)
 
@@ -55,7 +59,7 @@ npm install -w server express cors helmet pino zod dotenv
 npm install -D -w server @types/express @types/cors @types/node tsx vitest supertest @types/supertest
 
 # Frontend
-npm install -w client react react-dom @fontsource-variable/sora @fontsource-variable/instrument-sans
+npm install -w client react react-dom react-router-dom lucide-react @fontsource-variable/sora @fontsource-variable/instrument-sans
 npm install -D -w client vite @vitejs/plugin-react @types/react @types/react-dom vitest jsdom @testing-library/react
 ```
 
@@ -86,8 +90,8 @@ npm run dev:server   # API sur http://localhost:4000
 npm run dev:client   # site sur http://localhost:5173
 ```
 
-Ouvrez http://localhost:5173 : la page « Guide de style » s'affiche, avec le message « API disponible »
-quand le serveur tourne.
+Ouvrez http://localhost:5173 : l'accueil s'affiche. La page http://localhost:5173/guide-de-style
+montre le message « API disponible » quand le serveur tourne.
 
 ## Qualité
 
@@ -101,9 +105,11 @@ npm run format:check
 npm run audit:deps
 ```
 
-## Design system
+## Documentation du site et du design
 
-Voir `docs/design-system.md` : concept, tokens, thèmes, règles d'accessibilité, contrastes.
+- `docs/public-site.md` : pages, adresses, origine des contenus, limites actuelles.
+
+- `docs/design-system.md` : concept, tokens, thèmes, règles d'accessibilité, contrastes.
 
 ## Sécurité (état actuel)
 
@@ -128,11 +134,13 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 
 - `docs/decisions.md` : décisions d'architecture.
 - `docs/design-system.md` : design system.
+- `docs/public-site.md` : site public.
 
 ## Limites connues
 
 - Le rendu visuel n'a pas encore été contrôlé avec Lighthouse ni axe (prévu en Phase 10).
 - Aucune capture d'écran n'est encore disponible.
+- Les pages légales sont des textes provisoires à compléter et à faire relire.
 - Licence non choisie (décision explicite à prendre).
 
 ## Licence

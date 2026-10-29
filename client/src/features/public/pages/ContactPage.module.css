@@ -1,0 +1,22 @@
+.layout {
+  display: grid;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 38rem;
+}
+
+.privacy {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+@media (min-width: 64em) {
+  .layout {
+    grid-template-columns: 1fr 18rem;
+  }
+}

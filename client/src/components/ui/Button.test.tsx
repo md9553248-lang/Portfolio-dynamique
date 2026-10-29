@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Button } from './Button';
 
@@ -10,10 +11,18 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Valider' }).getAttribute('type')).toBe('button');
   });
 
-  it('devient un lien quand href est fourni', () => {
+  it('devient un lien simple pour une ancre ou une adresse externe', () => {
     render(<Button href="#contact">Me contacter</Button>);
-    const link = screen.getByRole('link', { name: 'Me contacter' });
-    expect(link.getAttribute('href')).toBe('#contact');
+    expect(screen.getByRole('link', { name: 'Me contacter' }).getAttribute('href')).toBe('#contact');
+  });
+
+  it('utilise le routeur pour un chemin interne', () => {
+    render(
+      <MemoryRouter>
+        <Button href="/projets">Projets</Button>
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link', { name: 'Projets' }).getAttribute('href')).toBe('/projets');
   });
 
   it('appelle onClick au clic', () => {

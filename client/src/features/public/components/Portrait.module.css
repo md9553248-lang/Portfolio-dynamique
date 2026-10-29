@@ -1,0 +1,13 @@
+.portrait {
+  display: grid;
+  place-items: center;
+  width: clamp(8rem, 24vw, 14rem);
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(160deg, var(--color-surface-2), var(--color-accent-soft));
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xs);
+  color: var(--color-accent-text);
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+}

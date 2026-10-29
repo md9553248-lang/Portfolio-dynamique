@@ -3,6 +3,7 @@ export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
 export { CinemaFrame } from './CinemaFrame';
 export { Container } from './Container';
+export { ExternalAnchor } from './ExternalAnchor';
 export { Field, TextAreaField, TextField } from './Field';
 export { LightStreak } from './LightStreak';
 export { Section } from './Section';

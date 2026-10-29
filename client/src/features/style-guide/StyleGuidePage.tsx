@@ -11,6 +11,7 @@ import {
   TextAreaField,
   TextField,
 } from '../../components/ui';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import { ApiStatus } from './ApiStatus';
 import styles from './StyleGuidePage.module.css';
 
@@ -69,13 +70,15 @@ function EmailFieldDemo() {
  * Le vrai site public (accueil, projets, contact...) est construit en Phase 03.
  */
 export function StyleGuidePage() {
+  usePageMeta('Guide de style');
+
   return (
     <>
       <Container className={styles.intro}>
         <h1>Guide de style</h1>
         <p className={styles.lead}>
-          Cette page présente les couleurs, les textes et les composants du site. Elle est technique
-          et provisoire : le site public sera construit à la phase suivante.
+          Cette page présente les couleurs, les textes et les composants du site. Elle est
+          technique et provisoire : le site public sera construit à la phase suivante.
         </p>
         <ApiStatus />
       </Container>
@@ -111,11 +114,7 @@ export function StyleGuidePage() {
           {TYPE_SCALE.map(([name, token]) => (
             <li key={token} className={styles.scaleRow}>
               <span
-                className={
-                  token === '--text-lg' || token === '--text-base' || token === '--text-sm'
-                    ? styles.body
-                    : styles.display
-                }
+                className={token === '--text-lg' || token === '--text-base' || token === '--text-sm' ? styles.body : styles.display}
                 style={{ fontSize: `var(${token})` }}
               >
                 {name}
@@ -158,7 +157,9 @@ export function StyleGuidePage() {
           <div className={styles.cards}>
             <Card as="article">
               <h3>Carte simple</h3>
-              <p className={styles.muted}>Pour regrouper une information sans interaction.</p>
+              <p className={styles.muted}>
+                Pour regrouper une information sans interaction.
+              </p>
             </Card>
             <Card as="article" interactive>
               <h3>Carte interactive</h3>
@@ -183,11 +184,7 @@ export function StyleGuidePage() {
         <div className={styles.form}>
           <TextField label="Nom" name="nom-demo" autoComplete="name" required />
           <EmailFieldDemo />
-          <TextAreaField
-            label="Message"
-            name="message-demo"
-            hint="Décrivez votre projet en quelques lignes."
-          />
+          <TextAreaField label="Message" name="message-demo" hint="Décrivez votre projet en quelques lignes." />
           <TextField
             label="Champ en erreur (exemple figé)"
             name="erreur-demo"

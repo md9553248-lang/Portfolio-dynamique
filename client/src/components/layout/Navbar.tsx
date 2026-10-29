@@ -1,42 +1,30 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { cx } from '../../lib/cx';
 import { LightStreak } from '../ui/LightStreak';
 import styles from './Navbar.module.css';
 
-export interface NavLink {
+export interface NavItem {
   label: string;
   href: string;
 }
 
 interface NavbarProps {
   brand: string;
-  brandHref?: string;
-  links: NavLink[];
-  /** Lien actif (valeur de `href`), signalé par aria-current. */
-  currentHref?: string;
+  links: NavItem[];
   /** Éléments à droite (bascule de thème, etc.). */
   actions?: ReactNode;
 }
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="22"
-      height="22"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true" focusable="false">
       {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
     </svg>
   );
 }
 
-export function Navbar({ brand, brandHref = '/', links, currentHref, actions }: NavbarProps) {
+export function Navbar({ brand, links, actions }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
@@ -57,22 +45,18 @@ export function Navbar({ brand, brandHref = '/', links, currentHref, actions }: 
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <a className={styles.brand} href={brandHref}>
+        <Link className={styles.brand} to="/" onClick={() => setOpen(false)}>
           {brand}
-        </a>
+        </Link>
 
         <nav aria-label="Navigation principale" className={styles.nav}>
           <ul id={menuId} className={cx(styles.list, open && styles.open)}>
             {links.map((link) => (
               <li key={link.href}>
-                <a
-                  className={styles.link}
-                  href={link.href}
-                  aria-current={link.href === currentHref ? 'page' : undefined}
-                  onClick={() => setOpen(false)}
-                >
+                {/* NavLink ajoute lui-même aria-current="page" sur la page affichée. */}
+                <NavLink className={styles.link} to={link.href} onClick={() => setOpen(false)}>
                   {link.label}
-                </a>
+                </NavLink>
               </li>
             ))}
           </ul>

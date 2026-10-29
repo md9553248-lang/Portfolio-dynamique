@@ -88,8 +88,8 @@
   cursor: pointer;
 }
 
-/* --- Tablette et plus : navigation en ligne, bouton de menu masqué --- */
-@media (min-width: 48em) {
+/* --- Grand écran (1120px et plus) : navigation en ligne, bouton de menu masqué --- */
+@media (min-width: 70em) {
   .nav {
     grid-column: 2;
     justify-self: end;
