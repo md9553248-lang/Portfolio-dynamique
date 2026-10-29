@@ -1,0 +1,16 @@
+.streak {
+  position: relative;
+  height: 1px;
+  background: var(--streak);
+  opacity: 0.85;
+}
+
+/* Halo diffus sous le trait. */
+.streak::after {
+  content: '';
+  position: absolute;
+  inset: -2px 12% -2px;
+  background: var(--streak);
+  filter: blur(7px);
+  opacity: 0.55;
+}

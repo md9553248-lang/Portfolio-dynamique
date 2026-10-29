@@ -1,0 +1,13 @@
+.section {
+  padding-block: clamp(3rem, 8vw, 6rem);
+}
+
+.header {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+}
+
+.description {
+  color: var(--color-text-muted);
+}

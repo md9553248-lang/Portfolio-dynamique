@@ -8,10 +8,12 @@ afterEach(() => {
 });
 
 describe('App', () => {
-  it('affiche le titre', () => {
+  it('affiche le guide de style avec une navigation et un contenu principal', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true }));
     render(<App />);
-    expect(screen.getByRole('heading', { name: 'Portfolio' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1, name: 'Guide de style' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeTruthy();
+    expect(screen.getByRole('main')).toBeTruthy();
   });
 
   it('indique que l’API est disponible quand /api/health répond', async () => {

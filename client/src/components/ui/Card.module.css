@@ -1,0 +1,37 @@
+.card {
+  position: relative;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.interactive {
+  isolation: isolate;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+/* Lueur révélée au survol ou au focus : seule l'opacité est animée. */
+.interactive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: var(--shadow-glow-md);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.interactive:hover,
+.interactive:focus-within {
+  transform: translateY(-3px);
+  border-color: var(--color-border-strong);
+}
+.interactive:hover::before,
+.interactive:focus-within::before {
+  opacity: 0.7;
+}
