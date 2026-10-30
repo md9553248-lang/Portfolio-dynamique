@@ -30,10 +30,14 @@ export function CertificationsPage() {
                   {certification.expiresAt && (
                     <span>Expire en {formatMonthYear(certification.expiresAt)}</span>
                   )}
-                  {certification.credentialId && <span>Identifiant : {certification.credentialId}</span>}
+                  {certification.credentialId && (
+                    <span>Identifiant : {certification.credentialId}</span>
+                  )}
                 </div>
                 {certification.verifyUrl && (
-                  <ExternalAnchor href={certification.verifyUrl}>Vérifier la certification</ExternalAnchor>
+                  <ExternalAnchor href={certification.verifyUrl}>
+                    Vérifier la certification
+                  </ExternalAnchor>
                 )}
               </div>
             </Card>

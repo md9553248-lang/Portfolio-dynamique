@@ -22,7 +22,9 @@ describe('Accueil', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Mouhamed Diagne' })).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeTruthy();
     expect(screen.getByRole('main')).toBeTruthy();
-    expect(screen.getByRole('link', { name: /Voir mes projets/ }).getAttribute('href')).toBe('/projets');
+    expect(screen.getByRole('link', { name: /Voir mes projets/ }).getAttribute('href')).toBe(
+      '/projets',
+    );
   });
 
   it('met en avant les projets publiés et jamais les brouillons', () => {
@@ -51,7 +53,9 @@ describe('Projets', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Front-end' }));
     expect(screen.getByText('2 projets affichés')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Front-end' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Front-end' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Mobile' }));
     expect(screen.getByText('1 projet affiché')).toBeTruthy();
@@ -125,8 +129,12 @@ describe('Contact', () => {
     renderAt('/contact');
 
     fireEvent.change(screen.getByLabelText(/^Nom/), { target: { value: 'Awa Ndiaye' } });
-    fireEvent.change(screen.getByLabelText(/Adresse e-mail/), { target: { value: 'awa@exemple.com' } });
-    fireEvent.change(screen.getByLabelText(/^Sujet/), { target: { value: 'Proposition de stage' } });
+    fireEvent.change(screen.getByLabelText(/Adresse e-mail/), {
+      target: { value: 'awa@exemple.com' },
+    });
+    fireEvent.change(screen.getByLabelText(/^Sujet/), {
+      target: { value: 'Proposition de stage' },
+    });
     fireEvent.change(screen.getByLabelText(/^Message/), {
       target: { value: 'Bonjour, je souhaite échanger avec vous.' },
     });

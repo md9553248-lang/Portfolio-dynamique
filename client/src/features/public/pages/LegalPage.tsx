@@ -14,7 +14,8 @@ export function LegalPage() {
     <Container size="narrow" className={s.page}>
       <PageHeader title={fr.pages.legal.title} />
       <DemoNotice>
-        Texte provisoire : il doit être complété (hébergeur notamment) et relu avant la mise en ligne.
+        Texte provisoire : il doit être complété (hébergeur notamment) et relu avant la mise en
+        ligne.
       </DemoNotice>
 
       <section aria-labelledby="editeur" className={s.stack}>
@@ -32,7 +33,8 @@ export function LegalPage() {
       <section aria-labelledby="propriete" className={s.stack}>
         <h2 id="propriete">Propriété intellectuelle</h2>
         <p>
-          Sauf mention contraire, les textes, visuels et le code de ce site sont l’œuvre de {site.name}.
+          Sauf mention contraire, les textes, visuels et le code de ce site sont l’œuvre de{' '}
+          {site.name}.
         </p>
       </section>
 

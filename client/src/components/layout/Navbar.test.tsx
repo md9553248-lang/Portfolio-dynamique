@@ -31,7 +31,9 @@ describe('Navbar', () => {
     expect(button.getAttribute('aria-expanded')).toBe('false');
 
     fireEvent.click(button);
-    expect(screen.getByRole('button', { name: 'Fermer le menu' }).getAttribute('aria-expanded')).toBe('true');
+    expect(
+      screen.getByRole('button', { name: 'Fermer le menu' }).getAttribute('aria-expanded'),
+    ).toBe('true');
   });
 
   it('se ferme avec Échap et redonne le focus au bouton', () => {

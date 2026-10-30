@@ -68,7 +68,13 @@ export function Button(props: ButtonProps) {
   return (
     <button
       type={type}
-      className={cx(styles.button, styles[variant], styles[size], loading && styles.loading, className)}
+      className={cx(
+        styles.button,
+        styles[variant],
+        styles[size],
+        loading && styles.loading,
+        className,
+      )}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...rest}

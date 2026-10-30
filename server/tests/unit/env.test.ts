@@ -18,6 +18,7 @@ describe('parseEnv', () => {
     expect(env.NODE_ENV).toBe('development');
     expect(env.PORT).toBe(4000);
     expect(env.CV_MAX_SIZE_MB).toBe(5);
+    expect(env.DB_SSL).toBe(false);
   });
 
   it('accepte une configuration de production complète', () => {
@@ -38,6 +39,10 @@ describe('parseEnv', () => {
     expect(() => parseEnv({ ...validProduction, DB_USER: 'root' })).toThrow(ConfigError);
   });
 
+  it('refuse aussi le compte root pour les migrations en production', () => {
+    expect(() => parseEnv({ ...validProduction, DB_MIGRATION_USER: 'root' })).toThrow(ConfigError);
+  });
+
   it("refuse les valeurs d'exemple en production", () => {
     expect(() => parseEnv({ ...validProduction, SESSION_SECRET: 'change-me-'.repeat(5) })).toThrow(
       ConfigError,
@@ -45,12 +50,21 @@ describe('parseEnv', () => {
     expect(() => parseEnv({ ...validProduction, DB_PASSWORD: 'change-me-mot-de-passe' })).toThrow(
       ConfigError,
     );
+    expect(() =>
+      parseEnv({ ...validProduction, DB_MIGRATION_PASSWORD: 'change-me-mot-de-passe-migration' }),
+    ).toThrow(ConfigError);
   });
 
   it('refuse une origine http en production', () => {
     expect(() =>
       parseEnv({ ...validProduction, CLIENT_ORIGIN: 'http://portfolio.example.com' }),
     ).toThrow(ConfigError);
+  });
+
+  it('interprète DB_SSL comme un booléen et refuse une valeur ambiguë', () => {
+    expect(parseEnv({ DB_SSL: 'true' }).DB_SSL).toBe(true);
+    expect(parseEnv({ DB_SSL: 'false' }).DB_SSL).toBe(false);
+    expect(() => parseEnv({ DB_SSL: 'peut-etre' })).toThrow(ConfigError);
   });
 
   it("n'inclut jamais la valeur d'un secret dans le message d'erreur", () => {

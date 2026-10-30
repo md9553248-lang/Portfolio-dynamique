@@ -5,30 +5,30 @@ contenu est **statique** : il vient de fichiers du dépôt et non de la base de 
 
 ## Pages et adresses
 
-| Page | Adresse |
-|---|---|
-| Accueil | `/` |
-| À propos | `/a-propos` |
-| Projets, détail d'un projet | `/projets`, `/projets/<slug>` |
-| Compétences | `/competences` |
-| Expériences | `/experiences` |
-| Formations | `/formations` |
-| Certifications | `/certifications` |
-| Actualités, détail d'un article | `/actualites`, `/actualites/<slug>` |
-| Contact | `/contact` |
-| Confidentialité, mentions légales | `/confidentialite`, `/mentions-legales` |
-| Guide de style (technique, hors navigation) | `/guide-de-style` |
-| Page introuvable | toute autre adresse |
+| Page                                        | Adresse                                 |
+| ------------------------------------------- | --------------------------------------- |
+| Accueil                                     | `/`                                     |
+| À propos                                    | `/a-propos`                             |
+| Projets, détail d'un projet                 | `/projets`, `/projets/<slug>`           |
+| Compétences                                 | `/competences`                          |
+| Expériences                                 | `/experiences`                          |
+| Formations                                  | `/formations`                           |
+| Certifications                              | `/certifications`                       |
+| Actualités, détail d'un article             | `/actualites`, `/actualites/<slug>`     |
+| Contact                                     | `/contact`                              |
+| Confidentialité, mentions légales           | `/confidentialite`, `/mentions-legales` |
+| Guide de style (technique, hors navigation) | `/guide-de-style`                       |
+| Page introuvable                            | toute autre adresse                     |
 
 Une page d'erreur de secours (`ErrorBoundary`) s'affiche si un composant plante.
 
 ## D'où viennent les contenus
 
-| Fichier | Contenu | Nature |
-|---|---|---|
-| `client/src/data/site.ts` | nom, titre, présentation, objectifs, lien GitHub | informations réelles, textes de présentation en brouillon |
-| `client/src/data/demo.ts` | projets, compétences, expériences, certifications, articles | **exemples fictifs** (`demo: true`) |
-| `client/src/data/demo.ts` (`education`) | formation à l'UADB | informations réelles |
+| Fichier                                 | Contenu                                                     | Nature                                                    |
+| --------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------- |
+| `client/src/data/site.ts`               | nom, titre, présentation, objectifs, lien GitHub            | informations réelles, textes de présentation en brouillon |
+| `client/src/data/demo.ts`               | projets, compétences, expériences, certifications, articles | **exemples fictifs** (`demo: true`)                       |
+| `client/src/data/demo.ts` (`education`) | formation à l'UADB                                          | informations réelles                                      |
 
 Les contenus fictifs sont signalés sur le site par un badge « Démo » et un bandeau.
 Ils disparaissent quand la base MySQL (Phase 04), l'API (Phase 05) et l'administration (Phase 07)

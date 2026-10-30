@@ -30,8 +30,10 @@ export const fr = {
     },
     projects: {
       title: 'Projets',
-      intro: 'Une sélection de projets, avec les technologies utilisées et les difficultés rencontrées.',
-      description: 'Projets réalisés par Mouhamed Diagne, avec technologies et retours d’expérience.',
+      intro:
+        'Une sélection de projets, avec les technologies utilisées et les difficultés rencontrées.',
+      description:
+        'Projets réalisés par Mouhamed Diagne, avec technologies et retours d’expérience.',
     },
     skills: {
       title: 'Compétences',

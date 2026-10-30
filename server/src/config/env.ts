@@ -21,11 +21,20 @@ const envSchema = z
       .default('info'),
     CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
 
+    // Base de données : compte de l'application (droits minimaux sur les données).
     DB_HOST: z.string().min(1).optional(),
     DB_PORT: z.coerce.number().int().min(1).max(65535).optional(),
     DB_NAME: z.string().min(1).optional(),
     DB_USER: z.string().min(1).optional(),
     DB_PASSWORD: z.string().min(1).optional(),
+    // Compte distinct réservé aux migrations (structure). Jamais utilisé par le site en fonctionnement.
+    DB_MIGRATION_USER: z.string().min(1).optional(),
+    DB_MIGRATION_PASSWORD: z.string().min(1).optional(),
+    // Connexion chiffrée à MySQL (indispensable si la base est sur un autre serveur).
+    DB_SSL: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
 
     SESSION_SECRET: z.string().min(32).optional(),
 
@@ -48,10 +57,24 @@ const envSchema = z
         message: 'le compte "root" est interdit, utilisez un utilisateur dédié',
       });
     }
+    if (env.DB_MIGRATION_USER === 'root') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['DB_MIGRATION_USER'],
+        message: 'le compte "root" est interdit, utilisez un utilisateur dédié aux migrations',
+      });
+    }
     if (env.DB_PASSWORD && PLACEHOLDER_PATTERN.test(env.DB_PASSWORD)) {
       ctx.addIssue({
         code: 'custom',
         path: ['DB_PASSWORD'],
+        message: "valeur d'exemple détectée, définissez un vrai mot de passe",
+      });
+    }
+    if (env.DB_MIGRATION_PASSWORD && PLACEHOLDER_PATTERN.test(env.DB_MIGRATION_PASSWORD)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['DB_MIGRATION_PASSWORD'],
         message: "valeur d'exemple détectée, définissez un vrai mot de passe",
       });
     }

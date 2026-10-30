@@ -16,9 +16,13 @@ export function AboutPage() {
 
   return (
     <Container className={s.page}>
-      <PageHeader title={fr.pages.about.title} intro={`${site.name}, ${site.title.toLowerCase()}`} />
+      <PageHeader
+        title={fr.pages.about.title}
+        intro={`${site.name}, ${site.title.toLowerCase()}`}
+      />
       <DemoNotice>
-        Texte de présentation provisoire : il sera réécrit avec mes propres mots depuis l’administration.
+        Texte de présentation provisoire : il sera réécrit avec mes propres mots depuis
+        l’administration.
       </DemoNotice>
 
       <div className={styles.layout}>

@@ -13,7 +13,9 @@ describe('Button', () => {
 
   it('devient un lien simple pour une ancre ou une adresse externe', () => {
     render(<Button href="#contact">Me contacter</Button>);
-    expect(screen.getByRole('link', { name: 'Me contacter' }).getAttribute('href')).toBe('#contact');
+    expect(screen.getByRole('link', { name: 'Me contacter' }).getAttribute('href')).toBe(
+      '#contact',
+    );
   });
 
   it('utilise le routeur pour un chemin interne', () => {

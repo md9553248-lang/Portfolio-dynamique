@@ -15,7 +15,13 @@ interface TimelineItemProps {
   children?: ReactNode;
 }
 
-export function TimelineItem({ title, subtitle, period, demo = false, children }: TimelineItemProps) {
+export function TimelineItem({
+  title,
+  subtitle,
+  period,
+  demo = false,
+  children,
+}: TimelineItemProps) {
   return (
     <li className={styles.item}>
       <div className={styles.head}>

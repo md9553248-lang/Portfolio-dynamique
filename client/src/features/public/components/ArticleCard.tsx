@@ -21,7 +21,11 @@ export function ArticleCard({ article }: { article: Article }) {
         </h3>
         <p className={styles.description}>{article.excerpt}</p>
         <p className={styles.description}>
-          <Calendar size={16} aria-hidden="true" style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: '-0.15em' }} />
+          <Calendar
+            size={16}
+            aria-hidden="true"
+            style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: '-0.15em' }}
+          />
           <time dateTime={article.date}>{formatDate(article.date)}</time>
         </p>
       </div>

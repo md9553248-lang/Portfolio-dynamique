@@ -1,5 +1,13 @@
 import { ArrowRight } from 'lucide-react';
-import { Badge, Button, Card, Container, ExternalAnchor, LightStreak, Section } from '../../../components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  Container,
+  ExternalAnchor,
+  LightStreak,
+  Section,
+} from '../../../components/ui';
 import { experiences, projects, skills } from '../../../data/demo';
 import { site } from '../../../data/site';
 import { usePageMeta } from '../../../hooks/usePageMeta';
@@ -66,7 +74,11 @@ export function HomePage() {
         </div>
       </Section>
 
-      <Section id="projets" title="Projets mis en avant" description="Une sélection de mes réalisations.">
+      <Section
+        id="projets"
+        title="Projets mis en avant"
+        description="Une sélection de mes réalisations."
+      >
         <ul className={`${s.grid} ${s.grid3}`}>
           {featuredProjects.map((project) => (
             <li key={project.slug}>
@@ -90,7 +102,8 @@ export function HomePage() {
               {latestExperience.demo && <Badge tone="warning">{fr.demo.badge}</Badge>}
             </div>
             <p className={s.muted}>
-              {latestExperience.organization} · {formatPeriod(latestExperience.start, latestExperience.end)}
+              {latestExperience.organization} ·{' '}
+              {formatPeriod(latestExperience.start, latestExperience.end)}
             </p>
             <p className={styles.cardText}>{latestExperience.description}</p>
           </Card>

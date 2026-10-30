@@ -18,7 +18,12 @@ export function EducationPage() {
 
       <Timeline>
         {education.map((item) => (
-          <TimelineItem key={item.id} title={item.degree} subtitle={item.institution} demo={item.demo}>
+          <TimelineItem
+            key={item.id}
+            title={item.degree}
+            subtitle={item.institution}
+            demo={item.demo}
+          >
             <div>
               <Badge tone="accent">{item.status}</Badge>
             </div>

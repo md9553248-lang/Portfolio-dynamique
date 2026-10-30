@@ -12,6 +12,9 @@ coverage/
 .env.*
 !.env.example
 
+# --- Scripts SQL locaux contenant des mots de passe (copies des modèles *.example.sql) ---
+*.local.sql
+
 # --- Journaux ---
 logs/
 *.log

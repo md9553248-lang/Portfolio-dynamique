@@ -1,6 +1,13 @@
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { Badge, Button, Card, CinemaFrame, Container, ExternalAnchor } from '../../../components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CinemaFrame,
+  Container,
+  ExternalAnchor,
+} from '../../../components/ui';
 import { projects } from '../../../data/demo';
 import { usePageMeta } from '../../../hooks/usePageMeta';
 import { fr } from '../../../i18n/fr';
@@ -118,8 +125,12 @@ export function ProjectDetailPage() {
         <section aria-labelledby="liens" className={s.stack}>
           <h2 id="liens">Liens</h2>
           <div className={s.row}>
-            {project.githubUrl && <ExternalAnchor href={project.githubUrl}>Code sur GitHub</ExternalAnchor>}
-            {project.demoUrl && <ExternalAnchor href={project.demoUrl}>Démonstration en ligne</ExternalAnchor>}
+            {project.githubUrl && (
+              <ExternalAnchor href={project.githubUrl}>Code sur GitHub</ExternalAnchor>
+            )}
+            {project.demoUrl && (
+              <ExternalAnchor href={project.demoUrl}>Démonstration en ligne</ExternalAnchor>
+            )}
           </div>
         </section>
       )}

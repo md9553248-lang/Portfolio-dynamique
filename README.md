@@ -3,9 +3,10 @@
 Portfolio professionnel administrable et sécurisé : React + TypeScript (frontend), Node.js + Express +
 TypeScript (backend), MySQL.
 
-> **État du projet : Phase 03 (site public).** Le projet comprend un socle technique, un design
-> system et les pages publiques avec des **contenus de démonstration**. La base de données,
-> l'authentification, l'administration et l'envoi de messages **ne sont pas encore implémentés**.
+> **État du projet : Phase 04 (base de données).** Le projet comprend un socle technique, un design
+> system, les pages publiques avec des **contenus de démonstration** et le schéma MySQL avec ses
+> migrations. L'API ne se connecte pas encore à la base : l'authentification, l'administration et
+> l'envoi de messages **ne sont pas encore implémentés**.
 
 ## Ce qui existe réellement aujourd'hui
 
@@ -23,14 +24,17 @@ TypeScript (backend), MySQL.
 - Site public : accueil, à propos, projets (avec filtre et détail), compétences, expériences,
   formations, certifications, actualités, contact, confidentialité, mentions légales, page 404 et
   page d'erreur. Contenus statiques : voir `docs/public-site.md`.
+- Base de données : schéma MySQL (28 tables) en migrations SQL versionnées, exécuteur de migrations,
+  deux comptes MySQL aux droits séparés (application / migrations) et commande de contrôle des droits.
+  Voir `docs/database.md`.
 - ESLint, Prettier, TypeScript strict, Vitest, Supertest, Testing Library.
 
 ## Ce qui n'existe pas encore
 
-Contenus dynamiques (tout vient de fichiers du dépôt), schéma MySQL et migrations, API métier,
+Contenus dynamiques (tout vient de fichiers du dépôt : le site n'utilise pas encore la base), API métier,
 authentification, création du premier administrateur, administration, gestion du CV et des médias,
 envoi des messages du formulaire de contact, messagerie, animations, anglais, déploiement. Ces
-éléments arrivent dans les phases 04 à 11.
+éléments arrivent dans les phases 05 à 11.
 
 ## Prérequis (Windows)
 
@@ -55,7 +59,7 @@ disponibles au moment du développement, puis `package-lock.json` les fige. Depu
 npm install -D eslint @eslint/js typescript-eslint eslint-plugin-react-hooks globals eslint-config-prettier prettier "typescript@<6.1.0"
 
 # Backend
-npm install -w server express cors helmet pino zod dotenv
+npm install -w server express cors helmet pino zod dotenv mysql2
 npm install -D -w server @types/express @types/cors @types/node tsx vitest supertest @types/supertest
 
 # Frontend
@@ -82,6 +86,25 @@ node -e "import('node:crypto').then(c=>console.log(c.randomBytes(48).toString('h
 
 Le fichier `server\.env` est ignoré par Git. Ne le publiez jamais. Le frontend ne contient aucun secret :
 tout ce qui commence par `VITE_` serait visible publiquement.
+
+## Base de données (MySQL)
+
+Prérequis : MySQL 8. La procédure complète (création des comptes, droits, migrations) est dans
+`docs/database.md`. En résumé :
+
+```powershell
+npm run db:status -w server    # état des migrations
+npm run db:migrate -w server   # applique les migrations en attente
+npm run db:check -w server     # vérifie la connexion et les droits minimaux du compte de l'application
+```
+
+Les scripts `db:migrate`, `db:status` et `db:check` doivent exister dans `server/package.json` :
+
+```powershell
+npm pkg set "scripts.db:migrate=tsx src/scripts/migrate.ts up" -w server
+npm pkg set "scripts.db:status=tsx src/scripts/migrate.ts status" -w server
+npm pkg set "scripts.db:check=tsx src/scripts/db-check.ts" -w server
+```
 
 ## Lancement (deux fenêtres PowerShell)
 
@@ -135,11 +158,13 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 - `docs/decisions.md` : décisions d'architecture.
 - `docs/design-system.md` : design system.
 - `docs/public-site.md` : site public.
+- `docs/database.md` : base de données, comptes MySQL, migrations.
 
 ## Limites connues
 
 - Le rendu visuel n'a pas encore été contrôlé avec Lighthouse ni axe (prévu en Phase 10).
 - Aucune capture d'écran n'est encore disponible.
+- Les migrations et les tests d'intégration MySQL n'ont pas encore été exécutés sur une vraie base.
 - Les pages légales sont des textes provisoires à compléter et à faire relire.
 - Licence non choisie (décision explicite à prendre).
 

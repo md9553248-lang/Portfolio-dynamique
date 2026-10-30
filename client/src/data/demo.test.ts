@@ -20,7 +20,9 @@ describe('données de démonstration', () => {
   });
 
   it('contient au moins trois projets publiés et mis en avant pour l’accueil', () => {
-    const featured = projects.filter((project) => project.status === 'published' && project.featured);
+    const featured = projects.filter(
+      (project) => project.status === 'published' && project.featured,
+    );
     expect(featured.length).toBeGreaterThanOrEqual(3);
   });
 

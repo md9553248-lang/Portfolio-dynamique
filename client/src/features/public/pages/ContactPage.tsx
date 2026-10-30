@@ -1,6 +1,12 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Container, ExternalAnchor, TextAreaField, TextField } from '../../../components/ui';
+import {
+  Button,
+  Container,
+  ExternalAnchor,
+  TextAreaField,
+  TextField,
+} from '../../../components/ui';
 import { site } from '../../../data/site';
 import { usePageMeta } from '../../../hooks/usePageMeta';
 import { fr } from '../../../i18n/fr';
@@ -24,7 +30,8 @@ export function ContactPage() {
   const [validated, setValidated] = useState(false);
 
   const update =
-    (field: keyof ContactValues) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (field: keyof ContactValues) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
       setValues((current) => ({ ...current, [field]: value }));
     };
@@ -94,8 +101,8 @@ export function ContactPage() {
           <div role="status">
             {validated && (
               <DemoNotice>
-                Mode démonstration : le formulaire est valide, mais votre message n’a pas été envoyé car
-                le serveur de messagerie n’est pas encore connecté.
+                Mode démonstration : le formulaire est valide, mais votre message n’a pas été envoyé
+                car le serveur de messagerie n’est pas encore connecté.
               </DemoNotice>
             )}
           </div>
