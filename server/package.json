@@ -12,12 +12,14 @@
     "test:watch": "vitest",
     "db:migrate": "tsx src/scripts/migrate.ts up",
     "db:status": "tsx src/scripts/migrate.ts status",
-    "db:check": "tsx src/scripts/db-check.ts"
+    "db:check": "tsx src/scripts/db-check.ts",
+    "db:seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
+    "express-rate-limit": "^8.7.2",
     "helmet": "^8.3.0",
     "mysql2": "^3.24.6",
     "pino": "^10.4.0",

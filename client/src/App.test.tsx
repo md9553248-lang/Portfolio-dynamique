@@ -112,22 +112,7 @@ describe('Autres pages', () => {
 });
 
 describe('Contact', () => {
-  it('signale les champs invalides sans rien envoyer', () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
-    renderAt('/contact');
-
-    fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
-
-    expect(screen.getAllByRole('alert')).toHaveLength(4);
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it('accepte un formulaire valide, annonce le mode démonstration et n’envoie rien', () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
-    renderAt('/contact');
-
+  function fillValidForm() {
     fireEvent.change(screen.getByLabelText(/^Nom/), { target: { value: 'Awa Ndiaye' } });
     fireEvent.change(screen.getByLabelText(/Adresse e-mail/), {
       target: { value: 'awa@exemple.com' },
@@ -138,11 +123,80 @@ describe('Contact', () => {
     fireEvent.change(screen.getByLabelText(/^Message/), {
       target: { value: 'Bonjour, je souhaite échanger avec vous.' },
     });
+  }
+
+  it('signale les champs invalides sans rien envoyer', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    renderAt('/contact');
+
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
 
-    expect(screen.queryAllByRole('alert')).toHaveLength(0);
-    expect(screen.getByText(/Mode démonstration/)).toBeTruthy();
+    expect(await screen.findAllByRole('alert')).toHaveLength(4);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('envoie un formulaire valide au serveur puis confirme l’envoi', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ status: 201 });
+    vi.stubGlobal('fetch', fetchMock);
+    renderAt('/contact');
+
+    fillValidForm();
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
+
+    expect(await screen.findByText(/votre message a bien été envoyé/)).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/api/contact');
+    expect(init.method).toBe('POST');
+    expect(JSON.parse(String(init.body))).toEqual({
+      name: 'Awa Ndiaye',
+      email: 'awa@exemple.com',
+      subject: 'Proposition de stage',
+      message: 'Bonjour, je souhaite échanger avec vous.',
+      website: '',
+    });
+  });
+
+  it('indique clairement quand trop de messages ont été envoyés (429)', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status: 429 }));
+    renderAt('/contact');
+
+    fillValidForm();
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
+
+    expect(await screen.findByText(/Trop de messages envoyés/)).toBeTruthy();
+    expect(screen.queryByText(/bien été envoyé/)).toBeNull();
+  });
+
+  it('affiche les erreurs de champ renvoyées par le serveur (400)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        status: 400,
+        json: async () => ({
+          error: { fields: { email: 'Adresse e-mail refusée par le serveur.' } },
+        }),
+      }),
+    );
+    renderAt('/contact');
+
+    fillValidForm();
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
+
+    expect(await screen.findByText('Adresse e-mail refusée par le serveur.')).toBeTruthy();
+  });
+
+  it('indique un problème de connexion sans faire croire que le message est parti', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('réseau')));
+    renderAt('/contact');
+
+    fillValidForm();
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer le message' }));
+
+    expect(await screen.findByText(/Impossible de joindre le serveur/)).toBeTruthy();
+    expect(screen.queryByText(/bien été envoyé/)).toBeNull();
   });
 });
 

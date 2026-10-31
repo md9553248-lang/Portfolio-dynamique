@@ -20,6 +20,9 @@ const envSchema = z
       .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
       .default('info'),
     CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
+    // Nombre de serveurs intermédiaires (reverse proxy) devant l'application. 0 = aucun.
+    // Nécessaire pour lire la vraie adresse IP des visiteurs derrière un proxy (limitation de débit).
+    TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(0),
 
     // Base de données : compte de l'application (droits minimaux sur les données).
     DB_HOST: z.string().min(1).optional(),

@@ -15,6 +15,23 @@
   font-size: var(--text-sm);
 }
 
+.feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: none;
+}
+
+/* Champ piège : sorti de l'écran (et non masqué par display:none, que certains robots détectent). */
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 @media (min-width: 64em) {
   .layout {
     grid-template-columns: 1fr 18rem;

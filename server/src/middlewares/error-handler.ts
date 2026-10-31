@@ -1,5 +1,6 @@
 import type { ErrorRequestHandler } from 'express';
 import type { Logger } from 'pino';
+import { HttpError } from '../http/errors.js';
 
 /** Retourne le statut 4xx porté par certaines erreurs (ex. JSON invalide, corps trop gros). */
 function getClientErrorStatus(err: unknown): number | undefined {
@@ -15,9 +16,20 @@ function getClientErrorStatus(err: unknown): number | undefined {
  * Ne renvoie jamais de trace interne au client ; les détails vont uniquement dans les journaux.
  */
 export function createErrorHandler(logger: Logger): ErrorRequestHandler {
-  return (err, _req, res, next) => {
+  return (err, req, res, next) => {
     if (res.headersSent) {
       next(err);
+      return;
+    }
+
+    if (err instanceof HttpError) {
+      res.status(err.status).json({
+        error: {
+          code: err.code,
+          message: err.message,
+          ...(err.fields ? { fields: err.fields } : {}),
+        },
+      });
       return;
     }
 
@@ -33,7 +45,7 @@ export function createErrorHandler(logger: Logger): ErrorRequestHandler {
       return;
     }
 
-    logger.error({ err }, 'Erreur non gérée');
+    logger.error({ err, requestId: res.locals['requestId'], path: req.path }, 'Erreur non gérée');
     res
       .status(500)
       .json({ error: { code: 'INTERNAL_ERROR', message: 'Une erreur interne est survenue.' } });

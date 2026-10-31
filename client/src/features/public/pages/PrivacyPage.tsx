@@ -13,8 +13,7 @@ export function PrivacyPage() {
     <Container size="narrow" className={s.page}>
       <PageHeader title={fr.pages.privacy.title} />
       <DemoNotice>
-        Texte provisoire : il doit être finalisé et relu avant l’activation du formulaire de
-        contact.
+        Texte provisoire : il doit être finalisé et relu avant la mise en ligne du site.
       </DemoNotice>
 
       <section aria-labelledby="responsable" className={s.stack}>
@@ -27,8 +26,13 @@ export function PrivacyPage() {
       <section aria-labelledby="donnees" className={s.stack}>
         <h2 id="donnees">Données collectées</h2>
         <p>
-          Le formulaire de contact demande un nom, une adresse e-mail, un sujet et un message. À ce
-          jour, le formulaire n’est pas actif : aucune donnée n’est envoyée ni enregistrée.
+          Le formulaire de contact demande un nom, une adresse e-mail, un sujet et un message. Quand
+          vous l’envoyez, ces informations sont enregistrées dans la base de données du site et ne
+          sont consultables que par son propriétaire.
+        </p>
+        <p>
+          Pour limiter les abus (envois automatiques), une empreinte non réversible de votre adresse
+          IP est aussi conservée : l’adresse IP elle-même n’est pas enregistrée.
         </p>
       </section>
 
@@ -42,14 +46,14 @@ export function PrivacyPage() {
 
       <section aria-labelledby="conservation" className={s.stack}>
         <h2 id="conservation">Durée de conservation</h2>
-        <p>Elle sera précisée ici avant l’activation du formulaire.</p>
+        <p>La durée exacte sera précisée ici avant la mise en ligne du site.</p>
       </section>
 
       <section aria-labelledby="droits" className={s.stack}>
         <h2 id="droits">Vos droits</h2>
         <p>
-          Vous pourrez demander l’accès, la correction ou la suppression de vos données en
-          m’écrivant via la page <Link to="/contact">Contact</Link>.
+          Vous pouvez demander l’accès, la correction ou la suppression de vos données en m’écrivant
+          via la page <Link to="/contact">Contact</Link>.
         </p>
       </section>
 

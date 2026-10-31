@@ -34,10 +34,18 @@ Les contenus fictifs sont signalés sur le site par un badge « Démo » et un b
 Ils disparaissent quand la base MySQL (Phase 04), l'API (Phase 05) et l'administration (Phase 07)
 fourniront les vrais contenus. Les projets et articles en `draft` ne sont jamais affichés.
 
+## Ce qui est branché sur l'API
+
+- **Formulaire de contact** : valide les champs dans le navigateur puis envoie le message à
+  `POST /api/contact`. Le serveur revalide tout et enregistre le message dans la base. Les cas d'échec
+  (champs refusés, trop d'envois, serveur injoignable) sont expliqués au visiteur et ne sont jamais
+  présentés comme un succès. La notification par e-mail et la boîte de réception arrivent en Phase 08.
+
 ## Ce qui ne fonctionne pas encore (volontairement)
 
-- **Formulaire de contact** : valide les champs dans le navigateur, mais n'envoie rien. Il le dit
-  clairement après validation. L'envoi arrive avec le backend (Phases 05 et 08).
+- **Contenus** : projets, compétences, articles, etc. sont encore lus dans des fichiers du dépôt. Leur
+  raccordement à l'API (déjà disponible, voir `docs/api.md`) est l'étape suivante.
+
 - **CV** : aucun bouton de téléchargement, seulement « CV bientôt disponible ». La gestion du CV
   arrive en Phase 07.
 - **Photo** : les initiales sont affichées en attendant l'import d'une photo depuis l'administration.

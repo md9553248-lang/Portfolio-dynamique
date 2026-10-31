@@ -1,8 +1,7 @@
 # Base de données
 
-État : **Phase 04**. Le schéma, les migrations et les comptes MySQL existent. L'application
-(l'API) ne se connecte pas encore à la base : cela arrive en Phase 05. Les pages du site affichent
-donc toujours des contenus de démonstration.
+État : **Phase 05**. Le schéma, les migrations et les comptes MySQL existent, et l'API s'y connecte
+(voir `docs/api.md`). Le site public lit encore ses contenus dans des fichiers : son raccordement est l'étape suivante.
 
 Base visée : **MySQL 8** (les contraintes `CHECK` et les colonnes calculées exigent MySQL 8.0.16 ou plus).
 
@@ -80,6 +79,13 @@ avec le compte de l'application. La commande `npm run db:check` vérifie que c'e
    npm run db:migrate -w server
    npm run db:check -w server
    ```
+
+## Contenus de démonstration
+
+La migration `0007` ajoute une colonne `is_demo` aux projets, compétences, expériences, certifications et
+articles. La commande `npm run db:seed -w server` insère des exemples fictifs marqués `is_demo = 1` (et, s'ils
+n'existent pas, le profil et la formation réels, qui ne sont jamais marqués comme démo). Elle refuse de
+s'exécuter en production. `npm run db:seed -w server -- --reset` supprime puis recrée les exemples.
 
 ## Ajouter ou modifier une table plus tard
 
