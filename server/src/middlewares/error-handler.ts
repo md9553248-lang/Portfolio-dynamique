@@ -23,6 +23,9 @@ export function createErrorHandler(logger: Logger): ErrorRequestHandler {
     }
 
     if (err instanceof HttpError) {
+      if (err.headers) {
+        for (const [name, value] of Object.entries(err.headers)) res.setHeader(name, value);
+      }
       res.status(err.status).json({
         error: {
           code: err.code,

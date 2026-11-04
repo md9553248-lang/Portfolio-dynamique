@@ -1,11 +1,13 @@
 import 'dotenv/config';
-import { createHmac } from 'node:crypto';
 import type { Pool } from 'mysql2/promise';
 import { createApp } from './app.js';
 import { ConfigError, parseEnv, type Env } from './config/env.js';
 import { createAppPool } from './db/pool.js';
 import { createMysqlDependencies } from './dependencies.js';
 import { createLogger } from './logging/logger.js';
+import { createAuthService } from './modules/auth/auth.service.js';
+import { createArgon2Hasher } from './modules/auth/password-hasher.js';
+import { deriveSecret } from './utils/secrets.js';
 
 function loadConfigOrExit(): Env {
   try {
@@ -47,15 +49,40 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Clé dérivée du secret de session : l'empreinte des IP ne peut pas être recalculée sans le secret.
-  const ipHashSecret = createHmac('sha256', env.SESSION_SECRET ?? 'secret-de-developpement')
-    .update('portfolio:ip-hash:v1')
-    .digest('hex');
+  // Un secret distinct par usage, tous dérivés de SESSION_SECRET (obligatoire en production).
+  const baseSecret = env.SESSION_SECRET ?? 'secret-de-developpement';
+  const ipHashSecret = deriveSecret(baseSecret, 'ip-hash');
+  const csrfSecret = deriveSecret(baseSecret, 'csrf');
 
+  const deps = createMysqlDependencies(pool);
+  const authService = createAuthService({
+    repo: deps.auth,
+    hasher: createArgon2Hasher(),
+    ipHashSecret,
+    absoluteSessionSeconds: env.SESSION_ABSOLUTE_HOURS * 3600,
+    idleSessionSeconds: env.SESSION_IDLE_MINUTES * 60,
+    logger,
+  });
+
+  // Nettoyage des sessions expirées et des anciennes tentatives de connexion : au démarrage, puis toutes les heures.
+  const purge = () =>
+    authService.purge().catch((error: unknown) => {
+      logger.error({ code: (error as { code?: string }).code }, 'Échec du nettoyage des sessions');
+    });
+  void purge();
+  setInterval(() => void purge(), 60 * 60 * 1000).unref();
+
+  const isProduction = env.NODE_ENV === 'production';
   const app = createApp({
     clientOrigin: env.CLIENT_ORIGIN,
     logger,
-    deps: createMysqlDependencies(pool),
+    deps,
+    authService,
+    session: {
+      // En production : cookie réservé à ce domaine (préfixe __Host-) et transmis uniquement en HTTPS.
+      cookie: { name: isProduction ? '__Host-portfolio_session' : 'portfolio_session', secure: isProduction },
+      csrfSecret,
+    },
     ipHashSecret,
     trustProxy: env.TRUST_PROXY,
   });

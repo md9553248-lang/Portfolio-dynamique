@@ -3,10 +3,11 @@
 Portfolio professionnel administrable et sécurisé : React + TypeScript (frontend), Node.js + Express +
 TypeScript (backend), MySQL.
 
-> **État du projet : Phase 05 (backend).** Le projet comprend un socle technique, un design system, les
-> pages publiques (contenus de démonstration lus dans des fichiers), le schéma MySQL, une API publique
-> en lecture seule et un formulaire de contact qui enregistre les messages. L'authentification,
-> l'administration et le raccordement des pages à l'API **ne sont pas encore implémentés**.
+> **État du projet : Phase 06 (authentification).** Le projet comprend un socle technique, un design system,
+> les pages publiques (contenus de démonstration lus dans des fichiers), le schéma MySQL, une API publique
+> en lecture seule, un formulaire de contact qui enregistre les messages, et l'authentification de
+> l'administrateur (connexion, sessions, contrôle d'accès). Les écrans de gestion des contenus et le
+> raccordement des pages à l'API **ne sont pas encore implémentés**.
 
 ## Ce qui existe réellement aujourd'hui
 
@@ -27,6 +28,9 @@ TypeScript (backend), MySQL.
 - API REST (Express) : lecture des contenus publiés, formulaire de contact avec validation Zod, limitation
   de débit, champ piège anti-spam, requêtes SQL préparées, erreurs centralisées, contrôle de santé.
   Voir `docs/api.md`.
+- Authentification : connexion avec mot de passe Argon2id, sessions serveur (cookie HttpOnly), protection CSRF,
+  délai progressif contre la force brute, contrôle d'accès sur `/api/admin`, journal d'audit, création du premier
+  administrateur en ligne de commande. Voir `docs/security.md`. Page de connexion : `/admin/connexion`.
 - Base de données : schéma MySQL (28 tables) en migrations SQL versionnées, exécuteur de migrations,
   deux comptes MySQL aux droits séparés (application / migrations) et commande de contrôle des droits.
   Voir `docs/database.md`.
@@ -34,8 +38,8 @@ TypeScript (backend), MySQL.
 
 ## Ce qui n'existe pas encore
 
-Pages qui lisent leurs contenus dans l'API (elles lisent encore des fichiers), routes d'écriture,
-authentification, création du premier administrateur, administration, gestion du CV et des médias,
+Pages qui lisent leurs contenus dans l'API (elles lisent encore des fichiers), routes de gestion des contenus,
+double authentification, administration, gestion du CV et des médias,
 consultation des messages, notification par e-mail, animations, anglais, déploiement. Ces
 éléments arrivent dans les phases 06 à 11.
 
@@ -62,7 +66,7 @@ disponibles au moment du développement, puis `package-lock.json` les fige. Depu
 npm install -D eslint @eslint/js typescript-eslint eslint-plugin-react-hooks globals eslint-config-prettier prettier "typescript@<6.1.0"
 
 # Backend
-npm install -w server express cors helmet pino zod dotenv mysql2 express-rate-limit
+npm install -w server express cors helmet pino zod dotenv mysql2 express-rate-limit argon2
 npm install -D -w server @types/express @types/cors @types/node tsx vitest supertest @types/supertest
 
 # Frontend
@@ -111,6 +115,22 @@ npm pkg set "scripts.db:check=tsx src/scripts/db-check.ts" -w server
 npm pkg set "scripts.db:seed=tsx src/scripts/seed.ts" -w server
 ```
 
+## Premier administrateur
+
+Aucune inscription publique n'existe. Le compte se crée en ligne de commande, dans un terminal interactif (le mot de
+passe est saisi sans affichage). Une fois la base migrée :
+
+```powershell
+npm pkg set "scripts.admin:create=tsx src/scripts/admin.ts create" -w server
+npm pkg set "scripts.admin:set-password=tsx src/scripts/admin.ts set-password" -w server
+
+npm run admin:create -w server           # crée le premier compte
+npm run admin:set-password -w server     # mot de passe oublié (ferme toutes les sessions)
+```
+
+Choisissez une phrase de passe d'au moins 12 caractères, sans votre nom ni votre e-mail. Ensuite, connectez-vous sur
+`http://localhost:5173/admin/connexion`. Détails et limites : `docs/security.md`.
+
 ## Lancement (deux fenêtres PowerShell)
 
 ```powershell
@@ -147,8 +167,7 @@ masquant mots de passe/cookies/jetons, validation stricte de la configuration, p
 (aucune requête vers un service externe), `.gitignore` excluant secrets, `.env`, fichiers téléversés
 et sauvegardes.
 
-Pas encore en place : authentification, sessions, CSRF, limitation de débit, validation des entrées
-métier, protection des fichiers (phases 05 à 07).
+Pas encore en place : double authentification, protection des fichiers téléversés, CSP stricte (phases 07 à 10).
 
 Avant chaque publication sur GitHub :
 
@@ -166,6 +185,7 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 - `docs/public-site.md` : site public.
 - `docs/database.md` : base de données, comptes MySQL, migrations.
 - `docs/api.md` : routes de l'API, codes d'erreur, protections.
+- `docs/security.md` : authentification, sessions, CSRF, force brute, limites.
 
 ## Limites connues
 
@@ -173,6 +193,7 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 - Aucune capture d'écran n'est encore disponible.
 - Les tests d'intégration MySQL ne s'exécutent que si `DB_TEST_NAME` est défini (voir `docs/database.md`).
 - Le formulaire de contact enregistre les messages, mais aucune interface ne permet encore de les lire (Phase 08).
+- Pas de double authentification pour l'instant (décision n°7 à confirmer avant la production).
 - Les pages légales sont des textes provisoires à compléter et à faire relire.
 - Licence non choisie (décision explicite à prendre).
 

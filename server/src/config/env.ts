@@ -40,6 +40,10 @@ const envSchema = z
       .transform((value) => value === 'true'),
 
     SESSION_SECRET: z.string().min(32).optional(),
+    // Durée maximale d'une session (en heures), quoi qu'il arrive.
+    SESSION_ABSOLUTE_HOURS: z.coerce.number().int().min(1).max(168).default(12),
+    // Déconnexion automatique après une période sans activité (en minutes).
+    SESSION_IDLE_MINUTES: z.coerce.number().int().min(5).max(1440).default(120),
 
     STORAGE_DRIVER: z.enum(['local']).default('local'),
     STORAGE_LOCAL_PATH: z.string().min(1).default('./storage'),

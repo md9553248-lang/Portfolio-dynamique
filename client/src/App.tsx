@@ -1,5 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
 import { RootLayout } from './app/RootLayout';
+import { AdminHomePage } from './features/admin/AdminHomePage';
+import { AdminLayout } from './features/admin/AdminLayout';
+import { LoginPage } from './features/admin/LoginPage';
+import { RequireAuth } from './features/admin/RequireAuth';
 import { StyleGuidePage } from './features/style-guide/StyleGuidePage';
 import { AboutPage } from './features/public/pages/AboutPage';
 import { ArticlePage } from './features/public/pages/ArticlePage';
@@ -35,6 +39,12 @@ export default function App() {
         <Route path="confidentialite" element={<PrivacyPage />} />
         <Route path="mentions-legales" element={<LegalPage />} />
         <Route path="guide-de-style" element={<StyleGuidePage />} />
+        <Route path="admin" element={<AdminLayout />}>
+          <Route path="connexion" element={<LoginPage />} />
+          <Route element={<RequireAuth />}>
+            <Route index element={<AdminHomePage />} />
+          </Route>
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
