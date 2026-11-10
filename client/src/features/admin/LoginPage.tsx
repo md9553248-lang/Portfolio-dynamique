@@ -44,6 +44,7 @@ export function LoginPage() {
   }
 
   return (
+    <main>
     <Container size="narrow" className={styles.page}>
       <h1>Connexion</h1>
       <p className={styles.muted}>Espace réservé au propriétaire du site.</p>
@@ -87,5 +88,6 @@ export function LoginPage() {
         </div>
       </form>
     </Container>
+    </main>
   );
 }

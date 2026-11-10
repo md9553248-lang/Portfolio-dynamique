@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatMonthYear, formatPeriod } from './format';
+import { formatBytes, formatDate, formatMonthYear, formatPeriod } from './format';
 
 describe('format', () => {
   it('formate un mois et une année en français', () => {
@@ -13,5 +13,13 @@ describe('format', () => {
   it('formate une période terminée et une période en cours', () => {
     expect(formatPeriod('2025-07', '2025-09')).toBe('juillet 2025 – septembre 2025');
     expect(formatPeriod('2025-07', null)).toBe('juillet 2025 – aujourd’hui');
+  });
+});
+
+describe('formatBytes', () => {
+  it('affiche une taille lisible', () => {
+    expect(formatBytes(512)).toBe('512 o');
+    expect(formatBytes(2048)).toBe('2 Ko');
+    expect(formatBytes(2.5 * 1024 * 1024)).toBe('2,5 Mo');
   });
 });

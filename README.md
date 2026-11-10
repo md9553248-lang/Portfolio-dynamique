@@ -3,11 +3,11 @@
 Portfolio professionnel administrable et sécurisé : React + TypeScript (frontend), Node.js + Express +
 TypeScript (backend), MySQL.
 
-> **État du projet : Phase 06 (authentification).** Le projet comprend un socle technique, un design system,
+> **État du projet : Phase 07, partie 1 (administration : CV et médias).** Le projet comprend un socle technique, un design system,
 > les pages publiques (contenus de démonstration lus dans des fichiers), le schéma MySQL, une API publique
 > en lecture seule, un formulaire de contact qui enregistre les messages, et l'authentification de
-> l'administrateur (connexion, sessions, contrôle d'accès). Les écrans de gestion des contenus et le
-> raccordement des pages à l'API **ne sont pas encore implémentés**.
+> l'administrateur, et un espace d'administration (tableau de bord, gestion du CV, médiathèque). Les écrans de
+> gestion des autres contenus et le raccordement des pages à l'API **ne sont pas encore implémentés**.
 
 ## Ce qui existe réellement aujourd'hui
 
@@ -28,6 +28,9 @@ TypeScript (backend), MySQL.
 - API REST (Express) : lecture des contenus publiés, formulaire de contact avec validation Zod, limitation
   de débit, champ piège anti-spam, requêtes SQL préparées, erreurs centralisées, contrôle de santé.
   Voir `docs/api.md`.
+- Administration (`/admin`) : tableau de bord avec statistiques réelles, **gestion du CV** (import en brouillon, aperçu,
+  publication, masquage, anciennes versions) et médiathèque (images et PDF). Le bouton « Télécharger mon CV » du site suit
+  l'état du CV sans redéploiement. Voir `docs/admin.md`.
 - Authentification : connexion avec mot de passe Argon2id, sessions serveur (cookie HttpOnly), protection CSRF,
   délai progressif contre la force brute, contrôle d'accès sur `/api/admin`, journal d'audit, création du premier
   administrateur en ligne de commande. Voir `docs/security.md`. Page de connexion : `/admin/connexion`.
@@ -38,8 +41,8 @@ TypeScript (backend), MySQL.
 
 ## Ce qui n'existe pas encore
 
-Pages qui lisent leurs contenus dans l'API (elles lisent encore des fichiers), routes de gestion des contenus,
-double authentification, administration, gestion du CV et des médias,
+Pages qui lisent leurs contenus dans l'API (elles lisent encore des fichiers), gestion des projets, compétences,
+expériences, formations, certifications, articles, profil et réglages, double authentification,
 consultation des messages, notification par e-mail, animations, anglais, déploiement. Ces
 éléments arrivent dans les phases 06 à 11.
 
@@ -66,8 +69,8 @@ disponibles au moment du développement, puis `package-lock.json` les fige. Depu
 npm install -D eslint @eslint/js typescript-eslint eslint-plugin-react-hooks globals eslint-config-prettier prettier "typescript@<6.1.0"
 
 # Backend
-npm install -w server express cors helmet pino zod dotenv mysql2 express-rate-limit argon2
-npm install -D -w server @types/express @types/cors @types/node tsx vitest supertest @types/supertest
+npm install -w server express cors helmet pino zod dotenv mysql2 express-rate-limit argon2 multer
+npm install -D -w server @types/express @types/cors @types/node @types/multer tsx vitest supertest @types/supertest
 
 # Frontend
 npm install -w client react react-dom react-router-dom lucide-react @fontsource-variable/sora @fontsource-variable/instrument-sans
@@ -167,7 +170,8 @@ masquant mots de passe/cookies/jetons, validation stricte de la configuration, p
 (aucune requête vers un service externe), `.gitignore` excluant secrets, `.env`, fichiers téléversés
 et sauvegardes.
 
-Pas encore en place : double authentification, protection des fichiers téléversés, CSP stricte (phases 07 à 10).
+En place aussi : contrôle du type réel des fichiers téléversés, stockage hors du dépôt sous des noms aléatoires.
+Pas encore en place : double authentification, CSP stricte (phases 07 à 10).
 
 Avant chaque publication sur GitHub :
 
@@ -186,6 +190,7 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 - `docs/database.md` : base de données, comptes MySQL, migrations.
 - `docs/api.md` : routes de l'API, codes d'erreur, protections.
 - `docs/security.md` : authentification, sessions, CSRF, force brute, limites.
+- `docs/admin.md` : administration, gestion du CV et des médias, sécurité des fichiers, sauvegardes.
 
 ## Limites connues
 
@@ -193,6 +198,7 @@ Vérifiez qu'aucun `.env`, CV, sauvegarde ou clé privée n'apparaît dans la li
 - Aucune capture d'écran n'est encore disponible.
 - Les tests d'intégration MySQL ne s'exécutent que si `DB_TEST_NAME` est défini (voir `docs/database.md`).
 - Le formulaire de contact enregistre les messages, mais aucune interface ne permet encore de les lire (Phase 08).
+- Les fichiers téléversés sont stockés sur le disque du serveur (`server/storage/`, ignoré par Git) : en production, il faut un volume persistant et une sauvegarde (Phase 11).
 - Pas de double authentification pour l'instant (décision n°7 à confirmer avant la production).
 - Les pages légales sont des textes provisoires à compléter et à faire relire.
 - Licence non choisie (décision explicite à prendre).

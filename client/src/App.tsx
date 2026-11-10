@@ -1,8 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import { RootLayout } from './app/RootLayout';
-import { AdminHomePage } from './features/admin/AdminHomePage';
 import { AdminLayout } from './features/admin/AdminLayout';
+import { AdminShell } from './features/admin/AdminShell';
+import { CvPage } from './features/admin/CvPage';
+import { DashboardPage } from './features/admin/DashboardPage';
 import { LoginPage } from './features/admin/LoginPage';
+import { MediaPage } from './features/admin/MediaPage';
 import { RequireAuth } from './features/admin/RequireAuth';
 import { StyleGuidePage } from './features/style-guide/StyleGuidePage';
 import { AboutPage } from './features/public/pages/AboutPage';
@@ -39,13 +42,19 @@ export default function App() {
         <Route path="confidentialite" element={<PrivacyPage />} />
         <Route path="mentions-legales" element={<LegalPage />} />
         <Route path="guide-de-style" element={<StyleGuidePage />} />
-        <Route path="admin" element={<AdminLayout />}>
-          <Route path="connexion" element={<LoginPage />} />
-          <Route element={<RequireAuth />}>
-            <Route index element={<AdminHomePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+
+      {/* Administration : espace séparé, sans la navigation du site public. */}
+      <Route path="admin" element={<AdminLayout />}>
+        <Route path="connexion" element={<LoginPage />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<AdminShell />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="cv" element={<CvPage />} />
+            <Route path="medias" element={<MediaPage />} />
           </Route>
         </Route>
-        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

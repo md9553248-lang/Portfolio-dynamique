@@ -48,6 +48,8 @@ const envSchema = z
     STORAGE_DRIVER: z.enum(['local']).default('local'),
     STORAGE_LOCAL_PATH: z.string().min(1).default('./storage'),
     CV_MAX_SIZE_MB: z.coerce.number().positive().max(50).default(5),
+    // Taille maximale d'une image ou d'un document de la médiathèque (en Mo).
+    MEDIA_MAX_SIZE_MB: z.coerce.number().positive().max(50).default(5),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;

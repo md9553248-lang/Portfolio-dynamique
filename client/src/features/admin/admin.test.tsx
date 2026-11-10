@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../../App';
@@ -29,8 +29,23 @@ function mockFetch(routes: Routes) {
 }
 
 const ME_ANONYMOUS = { 'GET /api/auth/me': () => jsonResponse(401, { error: { code: 'UNAUTHENTICATED' } }) };
+const DASHBOARD = {
+  'GET /api/admin/dashboard': () =>
+    jsonResponse(200, {
+      data: {
+        projects: { published: 1, draft: 0 },
+        articles: { published: 0, draft: 0 },
+        messages: { total: 0, unread: 0 },
+        media: { total: 0 },
+        cv: { publishedAt: null },
+        security: { failedLogins24h: 0 },
+        recentActivity: [],
+      },
+    }),
+};
 const ME_LOGGED_IN = {
   'GET /api/auth/me': () => jsonResponse(200, { data: { user: USER, csrfToken: 'csrf-123' } }),
+  ...DASHBOARD,
 };
 
 function renderAt(path: string) {
@@ -75,13 +90,14 @@ describe('Espace d’administration', () => {
     const fetchMock = mockFetch({
       ...ME_ANONYMOUS,
       'POST /api/auth/login': () => jsonResponse(200, { data: { user: USER, csrfToken: 'csrf-123' } }),
+      ...DASHBOARD,
     });
     renderAt('/admin/connexion');
     await screen.findByRole('heading', { name: 'Connexion' });
 
     fillAndSubmit();
 
-    expect(await screen.findByRole('heading', { level: 1, name: 'Administration' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeTruthy();
     expect(screen.getByText(/Connecté en tant que Administrateur Test/)).toBeTruthy();
 
     const loginCall = fetchMock.mock.calls.find(([url]) => url === '/api/auth/login');
@@ -95,11 +111,12 @@ describe('Espace d’administration', () => {
     mockFetch({
       ...ME_ANONYMOUS,
       'POST /api/auth/login': () => jsonResponse(200, { data: { user: USER, csrfToken: 'csrf-123' } }),
+      ...DASHBOARD,
     });
     renderAt('/admin/connexion');
     await screen.findByRole('heading', { name: 'Connexion' });
     fillAndSubmit();
-    await screen.findByRole('heading', { name: 'Administration' });
+    await screen.findByRole('heading', { name: 'Tableau de bord' });
 
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
@@ -117,7 +134,7 @@ describe('Espace d’administration', () => {
 
     expect((await screen.findByRole('alert')).textContent).toBe('Identifiants incorrects.');
     expect((screen.getByLabelText(/Mot de passe/) as HTMLInputElement).value).toBe('');
-    expect(screen.queryByRole('heading', { name: 'Administration' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Tableau de bord' })).toBeNull();
   });
 
   it('indique combien de temps attendre après trop de tentatives (429)', async () => {
@@ -163,13 +180,13 @@ describe('Espace d’administration', () => {
   it('affiche directement l’administration quand la session est déjà valide', async () => {
     mockFetch(ME_LOGGED_IN);
     renderAt('/admin');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Administration' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeTruthy();
   });
 
   it('renvoie vers l’administration quand on ouvre la connexion déjà connecté', async () => {
     mockFetch(ME_LOGGED_IN);
     renderAt('/admin/connexion');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Administration' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeTruthy();
   });
 
   it('se déconnecte avec le jeton CSRF puis revient à la connexion', async () => {
@@ -178,7 +195,7 @@ describe('Espace d’administration', () => {
       'POST /api/auth/logout': () => jsonResponse(200, { data: { loggedOut: true } }),
     });
     renderAt('/admin');
-    await screen.findByRole('heading', { name: 'Administration' });
+    await screen.findByRole('heading', { name: 'Tableau de bord' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Se déconnecter' }));
 
@@ -193,26 +210,29 @@ describe('Espace d’administration', () => {
       'POST /api/auth/logout': () => jsonResponse(500, { error: {} }),
     });
     renderAt('/admin');
-    await screen.findByRole('heading', { name: 'Administration' });
+    await screen.findByRole('heading', { name: 'Tableau de bord' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Se déconnecter' }));
 
     expect((await screen.findByRole('alert')).textContent).toContain('déconnexion a échoué');
-    expect(screen.getByRole('heading', { name: 'Administration' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Tableau de bord' })).toBeTruthy();
   });
 
   it('signale un problème de vérification de session sans afficher l’administration', async () => {
     mockFetch({ 'GET /api/auth/me': () => jsonResponse(500, { error: {} }) });
     renderAt('/admin');
     expect((await screen.findByRole('alert')).textContent).toContain('Impossible de vérifier votre session');
-    expect(screen.queryByRole('heading', { name: 'Administration' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Tableau de bord' })).toBeNull();
   });
 
-  it('n’interroge pas le serveur d’authentification sur les pages publiques', () => {
-    const fetchMock = mockFetch({});
+  it('n’interroge pas le serveur d’authentification sur les pages publiques', async () => {
+    const fetchMock = mockFetch({
+      'GET /api/public/cv': () => jsonResponse(200, { data: { available: false, updatedAt: null } }),
+    });
     renderAt('/');
     renderAt('/projets');
-    expect(fetchMock).not.toHaveBeenCalled();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    expect(fetchMock.mock.calls.every(([url]) => !String(url).startsWith('/api/auth'))).toBe(true);
   });
 
   it('demande aux moteurs de recherche de ne pas référencer l’administration', async () => {

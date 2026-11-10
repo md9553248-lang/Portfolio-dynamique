@@ -5,6 +5,8 @@ export class HttpError extends Error {
   readonly fields?: Record<string, string>;
   /** En-têtes à ajouter à la réponse (ex. Retry-After). */
   readonly headers?: Record<string, string>;
+  /** Informations supplémentaires montrables au client (ex. où un fichier est utilisé). */
+  readonly details?: unknown;
 
   constructor(
     status: number,
@@ -12,6 +14,7 @@ export class HttpError extends Error {
     message: string,
     fields?: Record<string, string>,
     headers?: Record<string, string>,
+    details?: unknown,
   ) {
     super(message);
     this.name = 'HttpError';
@@ -19,6 +22,7 @@ export class HttpError extends Error {
     this.code = code;
     if (fields) this.fields = fields;
     if (headers) this.headers = headers;
+    if (details !== undefined) this.details = details;
   }
 }
 

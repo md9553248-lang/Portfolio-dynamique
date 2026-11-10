@@ -17,6 +17,10 @@ interface AuthContextValue {
   user: AuthUser | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Jeton CSRF en mémoire, à joindre aux requêtes qui modifient des données. */
+  getCsrfToken: () => string | null;
+  /** Appelé quand le serveur répond 401 : la session a expiré, on revient à la connexion. */
+  expireSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -64,9 +68,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: 'anonymous', user: null });
   }, []);
 
+  const getCsrfToken = useCallback(() => csrfToken.current, []);
+  const expireSession = useCallback(() => {
+    csrfToken.current = null;
+    setState({ status: 'anonymous', user: null });
+  }, []);
+
   const value = useMemo<AuthContextValue>(
-    () => ({ status: state.status, user: state.user, signIn, signOut }),
-    [state, signIn, signOut],
+    () => ({ status: state.status, user: state.user, signIn, signOut, getCsrfToken, expireSession }),
+    [state, signIn, signOut, getCsrfToken, expireSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

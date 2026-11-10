@@ -26,9 +26,12 @@ type ButtonAsLink = CommonProps & {
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-/** Un chemin interne au site commence par « / » (et pas « // »). */
+/**
+ * Un chemin interne au site (géré par le routeur) commence par « / » (et pas « // »).
+ * Les adresses de l'API (« /api/... », ex. téléchargement du CV) sont de vrais liens : elles rechargent la page.
+ */
 function isInternalPath(href: string): boolean {
-  return href.startsWith('/') && !href.startsWith('//');
+  return href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/api/');
 }
 
 /**
@@ -68,13 +71,7 @@ export function Button(props: ButtonProps) {
   return (
     <button
       type={type}
-      className={cx(
-        styles.button,
-        styles[variant],
-        styles[size],
-        loading && styles.loading,
-        className,
-      )}
+      className={cx(styles.button, styles[variant], styles[size], loading && styles.loading, className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...rest}

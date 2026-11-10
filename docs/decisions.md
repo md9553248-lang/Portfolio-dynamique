@@ -41,4 +41,11 @@ Phase 00 et peut être modifiée tant que la phase concernée n'est pas commenc�
 | 34 | Premier administrateur et mot de passe oublié : uniquement en ligne de commande, aucune inscription publique | Phase 06, à valider |
 | 35 | Double authentification (TOTP) : toujours à décider avant la production (voir décision 7) | Ouverte |
 | 36 | Espace `/admin` : garde d'affichage côté site, vraie protection côté serveur sur chaque route `/api/admin` | Phase 06, à valider |
+| 37 | Phase 07 livrée en plusieurs parties vérifiables : (1) administration + CV + médias, puis contenus, puis articles/profil/réglages | Phase 07, à valider |
+| 38 | Fichiers stockés sous un UUID, hors du dépôt et jamais servis directement : toujours lus puis renvoyés par l'API | Phase 07, à valider |
+| 39 | Type de fichier déterminé d'après le contenu ; SVG refusé ; PDF avec JavaScript ou fichiers joints refusés | Phase 07, à valider |
+| 40 | CV : import en brouillon, publication atomique, un seul publié (garanti par la base), téléchargement sans cache aveugle | Phase 07, à valider |
+| 41 | Suppression d'un fichier refusée tant qu'il est utilisé ; remplacement qui garde l'identifiant mais change l'adresse | Phase 07, à valider |
+| 42 | Suppressions en deux temps (confirmation dans la page) plutôt qu'une fenêtre modale | Phase 07, à valider |
+| 43 | L'administration est un espace séparé du site public (sans sa navigation) | Phase 07, à valider |
 

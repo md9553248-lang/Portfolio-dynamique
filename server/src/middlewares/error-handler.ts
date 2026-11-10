@@ -31,6 +31,7 @@ export function createErrorHandler(logger: Logger): ErrorRequestHandler {
           code: err.code,
           message: err.message,
           ...(err.fields ? { fields: err.fields } : {}),
+          ...(err.details !== undefined ? { details: err.details } : {}),
         },
       });
       return;

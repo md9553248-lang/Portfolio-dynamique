@@ -1,0 +1,136 @@
+.page {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.error {
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+.success {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  list-style: none;
+}
+
+.statLabel {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+.activity {
+  display: grid;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.activity li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.preview {
+  width: 100%;
+  height: 32rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.uploadForm {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+}
+
+.fileInput {
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.progress {
+  width: 100%;
+  height: 0.75rem;
+  accent-color: var(--color-accent);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.mediaItem {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 6rem 1fr;
+  align-items: start;
+}
+
+.thumb {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-2);
+}
+
+.thumbPlaceholder {
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.mediaForm {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.select {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}

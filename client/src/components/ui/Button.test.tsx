@@ -13,9 +13,7 @@ describe('Button', () => {
 
   it('devient un lien simple pour une ancre ou une adresse externe', () => {
     render(<Button href="#contact">Me contacter</Button>);
-    expect(screen.getByRole('link', { name: 'Me contacter' }).getAttribute('href')).toBe(
-      '#contact',
-    );
+    expect(screen.getByRole('link', { name: 'Me contacter' }).getAttribute('href')).toBe('#contact');
   });
 
   it('utilise le routeur pour un chemin interne', () => {
@@ -25,6 +23,12 @@ describe('Button', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('link', { name: 'Projets' }).getAttribute('href')).toBe('/projets');
+  });
+
+  it('traite une adresse de l’API (/api/...) comme un vrai lien, sans routeur', () => {
+    // Pas de MemoryRouter ici : un lien géré par le routeur provoquerait une erreur.
+    render(<Button href="/api/public/cv/download">Télécharger</Button>);
+    expect(screen.getByRole('link', { name: 'Télécharger' }).getAttribute('href')).toBe('/api/public/cv/download');
   });
 
   it('appelle onClick au clic', () => {

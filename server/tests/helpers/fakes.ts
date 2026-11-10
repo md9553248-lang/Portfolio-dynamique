@@ -4,7 +4,10 @@ import type { AppDependencies } from '../../src/dependencies.js';
 import type { ContactRepository } from '../../src/modules/contact/contact.repository.js';
 import { createLogger } from '../../src/logging/logger.js';
 import { createAuthService } from '../../src/modules/auth/auth.service.js';
+import { createLocalStorage } from '../../src/storage/local-storage.js';
 import { createFakeAuthRepository, fakeHasher } from './fake-auth.js';
+import { createFakeFileRepositories, type FakeFiles } from './fake-files.js';
+import { createTempDir } from './temp.js';
 import type { ContentRepository } from '../../src/modules/content/content.repository.js';
 import type {
   ArticleDto,
@@ -20,6 +23,8 @@ export const ADMIN_EMAIL = 'admin@exemple.com';
 export const ADMIN_PASSWORD = 'Un-Bon-Mot-De-Passe-2026';
 export const IDLE_SECONDS = 300;
 export const ABSOLUTE_SECONDS = 600;
+export const MEDIA_MAX_BYTES = 200_000;
+export const CV_MAX_BYTES = 100_000;
 
 export const SAMPLE_PROJECTS: ProjectDto[] = [
   {
@@ -79,7 +84,11 @@ export const SAMPLE_ARTICLE: ArticleDto = {
 };
 
 /** Fausses dépendances en mémoire : les tests HTTP tournent sans MySQL. */
-export function createFakeDeps(overrides: Partial<AppDependencies> = {}, fakeAuth = createFakeAuthRepository()) {
+export function createFakeDeps(
+  overrides: Partial<AppDependencies> = {},
+  fakeAuth = createFakeAuthRepository(),
+  fakeFiles: FakeFiles = createFakeFileRepositories(),
+) {
   const spies = {
     listProjects: vi.fn<ContentRepository['listProjects']>(async ({ category, featured }) =>
       SAMPLE_PROJECTS.filter(
@@ -115,6 +124,10 @@ export function createFakeDeps(overrides: Partial<AppDependencies> = {}, fakeAut
     content,
     contact: { insertMessage: spies.insertMessage },
     auth: fakeAuth.repo,
+    media: fakeFiles.mediaRepo,
+    cv: fakeFiles.cvRepo,
+    dashboard: fakeFiles.dashboard,
+    audit: fakeFiles.auditRepo,
     ping: spies.ping,
     ...overrides,
   };
@@ -127,7 +140,10 @@ export function createTestApp(
 ) {
   const fakeAuth = createFakeAuthRepository();
   fakeAuth.addUser({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
-  const fake = createFakeDeps(depsOverrides, fakeAuth);
+  const fakeFiles = createFakeFileRepositories();
+  const fake = createFakeDeps(depsOverrides, fakeAuth, fakeFiles);
+  const storageDir = createTempDir();
+  const storage = createLocalStorage(storageDir);
   const logger = createLogger('silent');
 
   const hasher = { ...fakeHasher, verify: vi.fn(fakeHasher.verify) };
@@ -146,8 +162,10 @@ export function createTestApp(
     deps: fake.deps,
     authService,
     session: { cookie: { name: COOKIE_NAME, secure: false }, csrfSecret: CSRF_SECRET },
+    storage,
+    uploadLimits: { mediaMaxBytes: MEDIA_MAX_BYTES, cvMaxBytes: CV_MAX_BYTES },
     ipHashSecret: IP_HASH_SECRET,
     ...optionOverrides,
   });
-  return { app, fakeAuth, hasher, authService, ...fake };
+  return { app, fakeAuth, fakeFiles, storage, storageDir, hasher, authService, ...fake };
 }

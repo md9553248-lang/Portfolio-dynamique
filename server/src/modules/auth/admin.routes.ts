@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type RequestHandler } from 'express';
 import { getAuth, type AuthMiddlewares } from './auth.middleware.js';
 
 /**
@@ -6,9 +6,11 @@ import { getAuth, type AuthMiddlewares } from './auth.middleware.js';
  * 1. une session valide (401 sinon, même pour une adresse qui n'existe pas : on ne révèle rien),
  * 2. le rôle administrateur (403 sinon),
  * 3. l'origine du site et le jeton CSRF pour toute requête qui modifie des données.
- * Les routes de gestion des contenus, des médias et du CV arrivent en Phase 07.
  */
-export function createAdminRouter(mw: AuthMiddlewares): Router {
+export function createAdminRouter(
+  mw: AuthMiddlewares,
+  sections: Record<string, Router | RequestHandler> = {},
+): Router {
   const router = Router();
 
   router.use(mw.attachUser, mw.requireAuth, mw.requireRole('admin'), mw.requireSameOrigin, mw.requireCsrf);
@@ -18,6 +20,10 @@ export function createAdminRouter(mw: AuthMiddlewares): Router {
     res.setHeader('Cache-Control', 'no-store');
     res.json({ data: { ok: true, user: getAuth(res)?.user } });
   });
+
+  for (const [path, section] of Object.entries(sections)) {
+    router.use(`/${path}`, section);
+  }
 
   return router;
 }

@@ -1,7 +1,8 @@
 # API
 
-État : **Phase 06**. L'API publique est en lecture seule, plus l'envoi du formulaire de contact. L'authentification
-existe (voir `docs/security.md`) ; les routes de gestion des contenus arrivent en Phase 07.
+État : **Phase 07 (partie 1)**. L'API publique est en lecture seule, plus l'envoi du formulaire de contact. L'authentification
+existe (voir `docs/security.md`). L'administration expose le tableau de bord, le CV et les médias (voir `docs/admin.md`) ;
+les autres écrans de gestion arrivent dans la suite de la Phase 07.
 Les routes qui servent les fichiers (images, CV à télécharger) arrivent avec le stockage (Phase 07).
 
 Toutes les réponses sont en JSON. Succès : `{ "data": ... }`. Erreur :
@@ -24,12 +25,27 @@ Toutes les réponses sont en JSON. Succès : `{ "data": ... }`. Erreur :
 | GET | `/api/public/articles/:slug` | Un article publié (contenu en Markdown brut) |
 | GET | `/api/public/settings` | Réglages publics (thème par défaut, langues) |
 | GET | `/api/public/cv` | `{ available, updatedAt }` : un CV est-il publié ? |
+| GET | `/api/public/cv/download` | Télécharge le CV publié (404 s'il n'y en a pas) |
+| GET | `/api/public/media/:key` | Image ou document **public** (clé aléatoire) ; 404 pour un fichier privé ou inconnu |
 | POST | `/api/contact` | Envoi du formulaire de contact |
 | POST | `/api/auth/login` | Connexion (e-mail + mot de passe) : pose le cookie de session, renvoie l'utilisateur et le jeton CSRF |
 | GET | `/api/auth/me` | Session courante (401 sinon) : utilisateur et jeton CSRF |
 | POST | `/api/auth/logout` | Déconnexion (jeton CSRF exigé si une session existe) |
 | POST | `/api/auth/change-password` | Changement de mot de passe (session + CSRF) ; ferme les autres sessions |
 | GET | `/api/admin/status` | Vérification technique de l'accès administrateur (session + rôle) |
+| GET | `/api/admin/dashboard` | Statistiques réelles et activité récente |
+| GET | `/api/admin/media?kind=all\|image\|document` | Médiathèque |
+| POST | `/api/admin/media` | Importer un fichier (multipart : `file`, `altText`, `visibility`) |
+| GET | `/api/admin/media/:id/file` | Voir un fichier, y compris privé |
+| PATCH | `/api/admin/media/:id` | Modifier le texte alternatif ou la visibilité |
+| PUT | `/api/admin/media/:id/file` | Remplacer le contenu (même genre de fichier) |
+| DELETE | `/api/admin/media/:id` | Supprimer (409 si le fichier est utilisé) |
+| GET | `/api/admin/cv` | Versions du CV : publiée, brouillon, archivées |
+| POST | `/api/admin/cv` | Importer un PDF comme brouillon (multipart : `file`) |
+| GET | `/api/admin/cv/:id/file[?download=1]` | Aperçu ou téléchargement d'une version |
+| POST | `/api/admin/cv/:id/publish` | Publier une version (l'ancienne est archivée) |
+| POST | `/api/admin/cv/unpublish` | Masquer le CV |
+| DELETE | `/api/admin/cv/:id` | Supprimer un brouillon ou une version archivée |
 
 Paramètre commun : `?locale=fr` ou `?locale=en` (français par défaut ; une traduction manquante
 retombe sur le français).
@@ -55,7 +71,15 @@ Corps JSON obligatoire (`Content-Type: application/json`) :
 | 400 | `VALIDATION_ERROR` | Données invalides (détail dans `fields`) |
 | 400 | `BAD_REQUEST` | Requête mal formée (JSON invalide...) |
 | 404 | `NOT_FOUND` | Ressource inexistante, non publiée ou masquée |
-| 413 | `PAYLOAD_TOO_LARGE` | Corps de requête trop volumineux (20 ko maximum) |
+| 413 | `PAYLOAD_TOO_LARGE` | Corps de requête trop volumineux (20 ko maximum hors fichiers) |
+| 413 | `FILE_TOO_LARGE` | Fichier trop volumineux |
+| 400 | `INVALID_FILE_TYPE` | Type de fichier réel non autorisé |
+| 400 | `UNSAFE_PDF` | PDF contenant des éléments actifs |
+| 400 | `MISSING_FILE` | Aucun fichier reçu |
+| 400 | `INVALID_UPLOAD` | Envoi invalide (un seul fichier, champ `file`) |
+| 409 | `MEDIA_IN_USE` | Fichier encore utilisé (détail dans `error.details.usages`) |
+| 409 | `CV_PUBLISHED` | Le CV publié ne peut pas être supprimé (masquez-le d'abord) |
+| 409 | `NO_PUBLISHED_CV` | Aucun CV n'est publié |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Le contenu n'est pas du JSON |
 | 401 | `UNAUTHENTICATED` | Aucune session valide |
 | 401 | `INVALID_CREDENTIALS` | Identifiants incorrects (même réponse quel que soit le motif) |
@@ -85,5 +109,6 @@ Corps JSON obligatoire (`Content-Type: application/json`) :
 
 - Aucune route de gestion des contenus (hors contact et authentification) : les contenus se remplissent avec `npm run db:seed` en attendant l'administration (Phase 07).
 - Pas de double authentification (TOTP) pour l'instant.
+- Les routes de gestion des projets, compétences, articles, profil et réglages arrivent dans la suite de la Phase 07.
 - L'envoi d'un e-mail de notification à la réception d'un message est prévu en Phase 08.
 - Les URL d'images (`/api/public/media/<identifiant>`) sont préparées mais le service de fichiers n'existe pas encore.

@@ -18,6 +18,13 @@ export function getAuth(res: Response): AuthContext | undefined {
   return res.locals['auth'] as AuthContext | undefined;
 }
 
+/** Utilisateur de la requête. Les routes d'administration sont déjà protégées : ceci ne doit jamais échouer. */
+export function requireUser(res: Response): PublicUser {
+  const auth = getAuth(res);
+  if (!auth) throw new HttpError(401, 'UNAUTHENTICATED', 'Authentification requise.');
+  return auth.user;
+}
+
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export interface AuthMiddlewareOptions {

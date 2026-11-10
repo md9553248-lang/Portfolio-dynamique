@@ -97,6 +97,12 @@ volontaire pour un site à un seul administrateur.
 Les connexions réussies, échouées ou ralenties, déconnexions et changements de mot de passe sont inscrits dans
 `audit_logs` avec une empreinte d'adresse IP. **Jamais** l'e-mail saisi, le mot de passe ni un jeton.
 
+## Fichiers téléversés
+
+Le détail des contrôles sur les CV, images et documents (type réel, PDF actifs, noms, stockage, accès) est dans
+`docs/admin.md`. Les routes d'envoi passent par les mêmes protections que le reste de l'administration (session, rôle,
+origine, jeton CSRF) et sont journalisées.
+
 ## Menaces et limites connues
 
 | Risque | Mesure | Limite |

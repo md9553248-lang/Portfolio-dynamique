@@ -5,6 +5,7 @@ import { ConfigError, parseEnv, type Env } from './config/env.js';
 import { createAppPool } from './db/pool.js';
 import { createMysqlDependencies } from './dependencies.js';
 import { createLogger } from './logging/logger.js';
+import { createLocalStorage } from './storage/local-storage.js';
 import { createAuthService } from './modules/auth/auth.service.js';
 import { createArgon2Hasher } from './modules/auth/password-hasher.js';
 import { deriveSecret } from './utils/secrets.js';
@@ -82,6 +83,11 @@ async function main(): Promise<void> {
       // En production : cookie réservé à ce domaine (préfixe __Host-) et transmis uniquement en HTTPS.
       cookie: { name: isProduction ? '__Host-portfolio_session' : 'portfolio_session', secure: isProduction },
       csrfSecret,
+    },
+    storage: createLocalStorage(env.STORAGE_LOCAL_PATH),
+    uploadLimits: {
+      mediaMaxBytes: Math.round(env.MEDIA_MAX_SIZE_MB * 1024 * 1024),
+      cvMaxBytes: Math.round(env.CV_MAX_SIZE_MB * 1024 * 1024),
     },
     ipHashSecret,
     trustProxy: env.TRUST_PROXY,

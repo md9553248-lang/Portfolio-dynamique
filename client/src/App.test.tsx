@@ -1,6 +1,6 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 
 function renderAt(path: string) {
@@ -10,6 +10,24 @@ function renderAt(path: string) {
     </MemoryRouter>,
   );
 }
+
+function cvStatusFetch(available: boolean) {
+  return vi.fn(async (url: string) => {
+    if (url === '/api/public/cv') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: { available, updatedAt: null } }),
+      } as unknown as Response;
+    }
+    throw new Error(`Appel inattendu : ${url}`);
+  });
+}
+
+// Par défaut, aucun CV n'est publié (la page d'accueil interroge l'API pour le savoir).
+beforeEach(() => {
+  vi.stubGlobal('fetch', cvStatusFetch(false));
+});
 
 afterEach(() => {
   cleanup();
@@ -22,9 +40,7 @@ describe('Accueil', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Mouhamed Diagne' })).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeTruthy();
     expect(screen.getByRole('main')).toBeTruthy();
-    expect(screen.getByRole('link', { name: /Voir mes projets/ }).getAttribute('href')).toBe(
-      '/projets',
-    );
+    expect(screen.getByRole('link', { name: /Voir mes projets/ }).getAttribute('href')).toBe('/projets');
   });
 
   it('met en avant les projets publiés et jamais les brouillons', () => {
@@ -33,10 +49,28 @@ describe('Accueil', () => {
     expect(screen.queryByText('Projet en brouillon')).toBeNull();
   });
 
-  it('n’affiche aucun bouton de téléchargement tant qu’aucun CV n’est publié', () => {
+  it('masque le bouton de CV quand aucun CV n’est publié', async () => {
+    const fetchMock = cvStatusFetch(false);
+    vi.stubGlobal('fetch', fetchMock);
     renderAt('/');
-    expect(screen.getByText('CV bientôt disponible')).toBeTruthy();
-    expect(screen.queryByRole('link', { name: /Télécharger/ })).toBeNull();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/public/cv'));
+    expect(screen.queryByRole('link', { name: /CV/ })).toBeNull();
+  });
+
+  it('affiche le bouton de téléchargement dès qu’un CV est publié', async () => {
+    vi.stubGlobal('fetch', cvStatusFetch(true));
+    renderAt('/');
+    const link = await screen.findByRole('link', { name: /Télécharger mon CV/ });
+    expect(link.getAttribute('href')).toBe('/api/public/cv/download');
+  });
+
+  it('masque le bouton de CV sans bloquer la page si l’état du CV est inaccessible', async () => {
+    const failing = vi.fn().mockRejectedValue(new Error('réseau'));
+    vi.stubGlobal('fetch', failing);
+    renderAt('/');
+    await waitFor(() => expect(failing).toHaveBeenCalled());
+    expect(screen.getByRole('heading', { level: 1, name: 'Mouhamed Diagne' })).toBeTruthy();
+    expect(screen.queryByRole('link', { name: /Télécharger mon CV/ })).toBeNull();
   });
 
   it('signale clairement le contenu de démonstration', () => {
@@ -53,9 +87,7 @@ describe('Projets', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Front-end' }));
     expect(screen.getByText('2 projets affichés')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Front-end' }).getAttribute('aria-pressed')).toBe(
-      'true',
-    );
+    expect(screen.getByRole('button', { name: 'Front-end' }).getAttribute('aria-pressed')).toBe('true');
 
     fireEvent.click(screen.getByRole('button', { name: 'Mobile' }));
     expect(screen.getByText('1 projet affiché')).toBeTruthy();
@@ -114,12 +146,8 @@ describe('Autres pages', () => {
 describe('Contact', () => {
   function fillValidForm() {
     fireEvent.change(screen.getByLabelText(/^Nom/), { target: { value: 'Awa Ndiaye' } });
-    fireEvent.change(screen.getByLabelText(/Adresse e-mail/), {
-      target: { value: 'awa@exemple.com' },
-    });
-    fireEvent.change(screen.getByLabelText(/^Sujet/), {
-      target: { value: 'Proposition de stage' },
-    });
+    fireEvent.change(screen.getByLabelText(/Adresse e-mail/), { target: { value: 'awa@exemple.com' } });
+    fireEvent.change(screen.getByLabelText(/^Sujet/), { target: { value: 'Proposition de stage' } });
     fireEvent.change(screen.getByLabelText(/^Message/), {
       target: { value: 'Bonjour, je souhaite échanger avec vous.' },
     });
@@ -175,9 +203,7 @@ describe('Contact', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         status: 400,
-        json: async () => ({
-          error: { fields: { email: 'Adresse e-mail refusée par le serveur.' } },
-        }),
+        json: async () => ({ error: { fields: { email: 'Adresse e-mail refusée par le serveur.' } } }),
       }),
     );
     renderAt('/contact');

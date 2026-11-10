@@ -27,3 +27,17 @@ export function formatDate(iso: string): string {
 export function formatPeriod(start: string, end: string | null): string {
   return `${formatMonthYear(start)} – ${end ? formatMonthYear(end) : 'aujourd’hui'}`;
 }
+
+/** Taille lisible : « 850 Ko », « 2,4 Mo ». */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`;
+  return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} Mo`;
+}
+
+const dateTime = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
+
+/** Date et heure locales à partir d'une date ISO (ex. « 31 octobre 2026 à 12:00 »). */
+export function formatDateTime(iso: string): string {
+  return dateTime.format(new Date(iso));
+}
